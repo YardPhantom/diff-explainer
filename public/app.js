@@ -72,6 +72,8 @@ function render(files) {
   const areas = [...new Set(files.map(f => kind(f.name)))];
   const summary = files.length ? `This change touches <b>${files.length}</b> file(s) (+${add} / −${del}) across ${areas.join(', ')}. ` +
     files.map(f => `<b>${esc(f.name)}</b> was ${f.status}${f.status === 'modified' ? ` (+${f.add}/−${f.del})` : ''}`).join('; ') + '.' : 'No diff detected.';
+  window._md = `# Diff summary\n\n**Overall risk:** ${risk.toUpperCase()}\n\n${summary.replace(/<\/?b>/g, '**')}\n\n## Risk flags (${flags.length})\n` +
+    (flags.length ? flags.map(x => `- **${x.lvl.toUpperCase()}** ${x.msg} — \`${x.file}\``).join('\n') : '_No risks detected_') + '\n';
   document.getElementById('out').innerHTML =
     `<div class="card"><h2>Overall risk <span class="tag ${risk}">${{ high: 'HIGH', med: 'MEDIUM', low: 'LOW' }[risk]}</span></h2>${summary}</div>` +
     `<div class="card"><h2>Risk flags (${flags.length})</h2>${flags.length ? '<ul>' + flags.map(x => `<li><span class="tag ${x.lvl}">${x.lvl.toUpperCase()}</span>${esc(x.msg)} — <code>${esc(x.file)}</code><br><small><code>${esc(x.line.slice(0, 90))}</code></small></li>`).join('') + '</ul>' : '<em>No risks detected</em>'}</div>`;
